@@ -4,7 +4,7 @@
   <property name="target.classes" location="${basedir}/target/classes" />
   <property name="target.javacard" location="${basedir}/target/javacard" />
   <property name="source.java" location="${basedir}/src/main/java" />
-  <property name="javacard.export" location="${basedir}/target/export" />
+  <property name="javacard.export" location="${basedir}/src/main/export" />
 
   <property name="verbose" value="true" />
   <property name="noverify" value="false" />
@@ -18,6 +18,9 @@
 
   <!-- set the export path to the Java Card export files -->
   <path id="export" description="set the export file path">
+    <fileset dir="${javacard.export}">
+      <include name="**/*.exp" />
+    </fileset>
     <pathelement path="${javacard.export}" />
     <pathelement path="${target.classes}" />
     <pathelement path="${target.javacard}" />
