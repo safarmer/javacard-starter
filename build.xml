@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project default="convert" name="javacard-starter">
+  <!-- Build specific properties -->
+  <property name="target.classes" location="${basedir}/target/classes" />
+  <property name="target.javacard" location="${basedir}/target/javacard" />
+  <property name="source.java" location="${basedir}/src/main/java" />
+  <property name="javacard.export" location="${basedir}/target/export" />
+
+  <property name="verbose" value="true" />
+  <property name="noverify" value="false" />
+
+  <!-- Path for JC tasks -->
+  <path id="classpath">
+    <fileset dir="lib">
+      <include name="*.jar" />
+    </fileset>
+  </path>
+
+  <!-- set the export path to the Java Card export files -->
+  <path id="export" description="set the export file path">
+    <pathelement path="${javacard.export}" />
+    <pathelement path="${target.classes}" />
+    <pathelement path="${target.javacard}" />
+  </path>
+
+  <!-- Definitions for tasks for Java Card tools -->
+  <taskdef name="capgen" classname="com.sun.javacard.ant.tasks.CapgenTask" classpathref="classpath" />
+  <taskdef name="deploycap" classname="com.sun.javacard.ant.tasks.DeployCapTask" classpathref="classpath" />
+  <taskdef name="convert" classname="com.sun.javacard.ant.tasks.ConverterTask" classpathref="classpath" />
+  <taskdef name="verifyexport" classname="com.sun.javacard.ant.tasks.VerifyExpTask" classpathref="classpath" />
+  <taskdef name="verifycap" classname="com.sun.javacard.ant.tasks.VerifyCapTask" classpathref="classpath" />
+  <taskdef name="verifyrevision" classname="com.sun.javacard.ant.tasks.VerifyRevTask" classpathref="classpath" />
+  <typedef name="appletnameaid" classname="com.sun.javacard.ant.types.AppletNameAID" classpathref="classpath" />
+  <typedef name="jcainputfile" classname="com.sun.javacard.ant.types.JCAInputFile" classpathref="classpath" />
+
+  <target name="init">
+    <mkdir dir="${target.classes}" />
+    <mkdir dir="${target.javacard}" />
+  </target>
+
+  <target name="clean">
+    <delete dir="${target.classes}" />
+    <delete dir="${target.javacard}" />
+    <delete dir="${javacard.eeprom}" />
+  </target>
+
+  <target name="compile" depends="init" description="Compile source code to class files">
+    <!-- Compile the java code from ${src} to ${classes} -->
+    <javac debug="yes" optimize="no" srcdir="${source.java}" destdir="${target.classes}" source="1.5" target="1.5">
+      <classpath refid="classpath" />
+    </javac>
+  </target>
+
+  <target name="convert" depends="compile" description="Convert class files to cap files">
+		<convert packagename="chaining" packageaid="0xF0:0x00:0x00:0x01:0x00:0x01" majorminorversion="1.0" classdir="${target.classes}" outputdirectory="${target.classes}" jca="true" exp="true" cap="true" debug="true" verbose="${verbose}" noverify="${noverify}">
+			<appletnameaid aid="0xF0:0x00:0x00:0x01:0x00:0x01:0x00:0x01" appletname="chaining.ChainingApplet" />
+			<exportpath refid="export" />
+			<classpath refid="classpath" />
+		</convert>
+  </target>
+
+  <target name="copy-debug">
+    <mkdir dir="${target.debug}" />
+    <echo>Copying cap files</echo>
+    <copy flatten="true" todir="${target.debug}" verbose="true">
+      <fileset dir="${target.classes}" includes="**/*.cap" />
+      <fileset dir="${target.classes}" includes="**/*.exp" />
+      <fileset dir="${target.classes}" includes="**/*.jca" />
+    </copy>
+  </target>
+
+  <target name="all" depends="clean, convert" />
+</project>
