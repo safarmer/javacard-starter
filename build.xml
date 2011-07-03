@@ -4,6 +4,14 @@
   <property name="target.classes" location="${basedir}/target/classes" />
   <property name="target.javacard" location="${basedir}/target/javacard" />
   <property name="source.java" location="${basedir}/src/main/java" />
+  
+  <!-- Must point to the folder containing the JAR files from the JCDK -->
+  <property name="javacard.libs" location="${basedir}/lib" />
+  
+  <!-- Must point to the folder containing the JAR file from the JCDK ant task -->
+  <property name="javacard.ant-task" location="${basedir}/lib" />
+  
+  <!-- Must point to the folder containing the API export files from the JCDK -->
   <property name="javacard.export" location="${basedir}/src/main/export" />
 
   <property name="verbose" value="true" />
@@ -11,7 +19,10 @@
 
   <!-- Path for JC tasks -->
   <path id="classpath">
-    <fileset dir="lib">
+    <fileset dir="${javacard.ant-task}">
+      <include name="*.jar" />
+    </fileset>
+    <fileset dir="${javacard.libs}">
       <include name="*.jar" />
     </fileset>
   </path>
